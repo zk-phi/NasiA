@@ -1,0 +1,106 @@
+#!/usr/bin/fontforge -script
+
+halfwidth = 600
+fullwidth = 1200
+
+# ---- Parse command line args
+
+input  = ""
+output = ""
+
+expandstroke = 0
+doubleprint  = 0
+
+i = 1
+while (i < $argc)
+  if ($argv[i] == "--expandstroke")
+    i = i + 1
+    expandstroke = Strtol($argv[i])
+  elseif ($argv[i] == "--doubleprint")
+    i = i + 1
+    doubleprint = Strtol($argv[i])
+  elseif (input == "")
+    input = $argv[i]
+  elseif (output == "")
+    output = $argv[i]
+  endif
+  i = i + 1
+endloop
+
+# ---- Open
+
+Open(input)
+SelectWorthOutputting()
+ClearInstrs()
+UnlinkReference()
+
+# ---- Adjust parameters
+
+Print("NasuM: Adjusting parameters ...")
+SelectWorthOutputting()
+# TypoAscent / Descent
+ScaleToEm(780, 220)
+# Copy-pasted from the iA-Writer-font's value
+SetOS2Value("WinAscent", 1025)
+SetOS2Value("WinDescent", 275)
+SetOS2Value("HHeadAscent", 1025)
+SetOS2Value("HHeadDescent", -275)
+SetOS2Value("HHeadLineGap", 0)
+SetOS2Value("TypoAscent", 780)
+SetOS2Value("TypoDescent", -220)
+SetOS2Value("TypoLineGap", 300)
+
+# ---- Adjust scale and baseline
+
+Print("NasuM: Adjusting scale and baseline ...")
+# Maybe hand-adjusted
+Scale(95)
+Move(0, -21)
+
+# ---- Adjust weight
+
+if (expandstroke != 0)
+  Print("NasuM: Adjusting weight by expanding stroke ...")
+  SelectWorthOutputting()
+  ExpandStroke(expandstroke, 0, 0, 0, 1)
+  RoundToInt()
+  RemoveOverlap()
+  RoundToInt()
+endif
+
+if (doubleprint != 0)
+  Print("NasuM: Adjusting weight by double printing ...")
+  SelectWorthOutputting()
+  Print("pass 1 ...")
+  Copy()
+  PasteWithOffset(doubleprint, 0)
+  RoundToInt()
+  RemoveOverlap()
+  RoundToInt()
+  Print("pass 2 ...")
+  Copy()
+  PasteWithOffset(0, doubleprint)
+  RoundToInt()
+  RemoveOverlap()
+  RoundToInt()
+endif
+
+# ---- Monospacify
+
+Print("NasuM: Monospacifying ...")
+
+Select(0u0020, 0u007E)          # ASCII
+SetWidth(halfwidth)
+CenterInWidth()
+
+SelectWorthOutputting()
+SelectFewer(0u0020, 0u007E)
+SetWidth(fullwidth)
+CenterInWidth()
+
+# ---- Font generation
+
+Print("NasuM: Generating temporary font ...")
+Generate(output)
+
+Close()

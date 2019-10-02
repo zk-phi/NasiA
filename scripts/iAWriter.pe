@@ -1,0 +1,71 @@
+#!/usr/bin/fontforge -script
+
+halfwidth = 600
+fullwidth = 1200
+
+# ---- Parse command line args
+
+input  = ""
+output = ""
+
+expandstroke = 0
+doubleprint  = 0
+
+i = 1
+while (i < $argc)
+  if ($argv[i] == "--expandstroke")
+    i = i + 1
+    expandstroke = Strtol($argv[i])
+  elseif ($argv[i] == "--doubleprint")
+    i = i + 1
+    doubleprint = Strtol($argv[i])
+  elseif (input == "")
+    input = $argv[i]
+  elseif (output == "")
+    output = $argv[i]
+  endif
+  i = i + 1
+endloop
+
+# ---- Open
+
+Open(input)
+Reencode("unicode")
+SelectWorthOutputting()
+ClearInstrs()
+UnlinkReference()
+
+# ---- Adjust weight
+
+if (expandstroke != 0)
+  Print("iAWriter: Adjusting weight by expanding stoke ...")
+  SelectWorthOutputting()
+  ExpandStroke(expandstroke, 0, 0, 0, 1)
+  RoundToInt()
+  RemoveOverlap()
+  RoundToInt()
+endif
+
+if (doubleprint != 0)
+  Print("iAWriter: Adjusting weight by double printing ...")
+  SelectWorthOutputting()
+  Print("pass 1 ...")
+  Copy()
+  PasteWithOffset(doubleprint, 0)
+  RoundToInt()
+  RemoveOverlap()
+  RoundToInt()
+  Print("pass 2 ...")
+  Copy()
+  PasteWithOffset(0, doubleprint)
+  RoundToInt()
+  RemoveOverlap()
+  RoundToInt()
+endif
+
+# ---- Font Generation
+
+Print("iAWriter: Generating temporary font ...")
+Generate(output)
+
+Close()
