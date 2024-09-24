@@ -10,9 +10,9 @@ MERGEOPTS    = --visiblespace
 
 # ---- OUTPUT FILENAMES
 SOURCE_IAWRITER = ./fonts/iAWriterMonoS-Regular.ttf
-SOURCE_NASUM    = ./fonts/NasuM-Regular-20141215.ttf
+SOURCE_NASUM    = ./fonts/NasuM-Regular-20200227.ttf
 TMP_IAWRITER    = ./tmp/iAWriterMonoS-Regular_adjusted.ttf
-TMP_NASUM       = ./tmp/NasuM-Regular-20141215_adjusted.ttf
+TMP_NASUM       = ./tmp/NasuM-Regular-20200227_adjusted.ttf
 UNHINTED_OUTPUT = ./tmp/nasia-Medium_unhinted.ttf
 HINTED_OUTPUT   = ./dist/nasia-Medium.ttf
 
